@@ -1,0 +1,34 @@
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
+
+project(cuda-inference-samples LANGUAGES CXX CUDA)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(CUDAToolkit REQUIRED)
+
+list(GET CUDAToolkit_INCLUDE_DIRS 0 CUDA_MAIN_INCLUDE)
+
+configure_file(${CMAKE_SOURCE_DIR}/.clangd.in ${CMAKE_SOURCE_DIR}/.clangd @ONLY)
+
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    set(CMAKE_CUDA_ARCHITECTURES 75 80 86 89 90)
+endif()
+
+set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_BASE ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/common)
+    include_directories(common)
+endif()
+
+add_subdirectory(samples)
+
+message(STATUS "CUDA Architectures: ${CMAKE_CUDA_ARCHITECTURES}")
+message(STATUS "CUDA Toolkit Root: ${CUDAToolkit_ROOT}")
+message(STATUS "CUDA Version: ${CUDAToolkit_VERSION}")
+
